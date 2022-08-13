@@ -1,6 +1,6 @@
 import middy from '@middy/core';
 import middyJsonBodyParser from '@middy/http-json-body-parser';
-import { errorMiddleware } from '@utils/middlewares/error.middleware';
+import { errorMiddleware } from '@utils/middlewares/error';
 import { APIGatewayProxyResult, Context } from 'aws-lambda';
 
 export const LambdaService = {

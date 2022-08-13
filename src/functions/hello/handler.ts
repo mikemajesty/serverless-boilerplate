@@ -1,17 +1,15 @@
 import { LambdaService, ValidatedEventAPIGatewayProxyEvent, } from '@utils/lambda';
-import { LoggerService } from '@libs/logger';
 
 import schema from './schema';
 
 const hello: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
-  LoggerService.warn({ message: 'Hello World' });
-  return LambdaService.formatJSONResponse({
-    message: `Hello ${event.body.name}, welcome to the exciting Serverless world!`,
-    event,
-  });
+  const message = `Hello ${event.body.name}, welcome to the exciting Serverless world!`
+  throw new Error(message);
+  // return LambdaService.formatJSONResponse({
+  //   message,
+  //   event,
+  // });
 };
-
-
 
 export const main = LambdaService.middyfy(hello);
 

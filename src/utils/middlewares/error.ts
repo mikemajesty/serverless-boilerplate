@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ApiException } from '@utils/exception';
 import { MiddlewareObj } from '@middy/core';
 import { Context } from 'aws-lambda';
-import { errors } from './erros';
+import { errors } from '../static/erros';
 
 export const errorMiddleware = (): MiddlewareObj<any, any, any, Context> | MiddlewareObj<any, any, any, Context>[] => {
   const customMiddlewareBefore = async (request) => {
@@ -13,6 +13,7 @@ export const errorMiddleware = (): MiddlewareObj<any, any, any, Context> | Middl
     event.headers.traceId = uuidv4()
     request.id = event.headers.traceId
     LoggerService.httpLogger(request, { on: () => true } as any)
+    LoggerService.info({ message: `Lambda: ${request.ctx.functionName || request.context.functionName} in processing` });
   }
 
   const customMiddlewareAfter = async (request) => {
@@ -26,7 +27,8 @@ export const errorMiddleware = (): MiddlewareObj<any, any, any, Context> | Middl
     const error = new ApiException(request.error.message, request.error.statusCode, request.context)
     error.traceid = request.id
     LoggerService.error(error)
-    return LambdaService.formatJSONResponse({ context: request.context, message: errors[request.error.statusCode] || request.error.message, statusCode: request.error.statusCode, traceId: request.id }, request.error.statusCode || 500);
+    const statusCode = request.error.statusCode || 500
+    return LambdaService.formatJSONResponse({ error: { context: request.ctx || request.context.functionName, message: errors[request.error.statusCode] || request.error.message, statusCode, traceId: request.id }, statusCode });
   }
 
   return {

@@ -49,7 +49,6 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
   }
 
   info({ message, context, obj }: MessageType): void {
-    console.log(green(message));
     const _message = green(message);
 
     this.setContext(context);
@@ -73,7 +72,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
     const model =
     {
       ...response,
-      context: context || this.context || error['context'],
+      context: [context, this.context, error['context']['functionName'], error['context']].find(c => c),
       type: error?.name,
       traceid: this.getTraceId(error),
       timestamp: this.getDateFormat(),
@@ -162,7 +161,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
       },
       customProps: (request): unknown => {
         const context = this.context || request.context.functionName;
-        request.context = context
+        request.ctx = context
         const traceid = request.event?.headers?.traceId || request.id;
 
         const path = request.event?.requestContext ? `${request.event.headers.Host}${request.event.requestContext.resourcePath}` : 'invoke';

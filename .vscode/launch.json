@@ -9,6 +9,9 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/node_modules/.bin/sls",
+      "env": {
+        "NODE_ENV": "dev"
+      },
       "args": [
         "invoke",
         "local",
@@ -23,6 +26,9 @@
       "name": "Lambda: http",
       "type": "node",
       "request": "launch",
+      "env": {
+        "NODE_ENV": "dev"
+      },
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "debug"

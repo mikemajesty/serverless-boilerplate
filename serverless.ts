@@ -5,7 +5,8 @@ import hello from '@functions/hello';
 const serverlessConfiguration: AWS = {
   service: 'serverless-boilerplate',
   frameworkVersion: '3',
-  plugins: ['serverless-esbuild', 'serverless-offline'],
+  useDotenv: true,
+  plugins: ['serverless-esbuild', 'serverless-offline', 'serverless-dotenv-plugin'],
   provider: {
     name: 'aws',
     runtime: 'nodejs14.x',
@@ -16,6 +17,7 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
+      AWS_ACCESS_KEY_ID: '${env:AWS_ACCESS_KEY_ID}'
     },
   },
   // import the function via paths
