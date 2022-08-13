@@ -1,6 +1,7 @@
-import { ConfigService as Service } from "./service";
-import { IConfigAdapter } from "./adapter";
+import { IConfigAdapter } from './adapter';
+import { ConfigService as Service } from './service';
 
-export * from "./types";
-export * from "./adapter";
-export const ConfigService: IConfigAdapter = new Service()
+export * from './adapter';
+export * from './types';
+
+export const ConfigService: IConfigAdapter = new Service();

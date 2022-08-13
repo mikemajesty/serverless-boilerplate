@@ -4,11 +4,11 @@ import { errorMiddleware } from '@utils/middlewares/error';
 import { APIGatewayProxyResult, Context } from 'aws-lambda';
 
 export const LambdaService = {
-  middyfy(handler): middy.MiddyfiedHandler<any, any, any, Context> {
+  middyfy(handler): middy.MiddyfiedHandler<unknown, unknown, unknown, Context> {
     return middy(handler).use(middyJsonBodyParser()).use(errorMiddleware());
   },
 
-  formatJSONResponse(response: Record<string, unknown>, status: number = 200): APIGatewayProxyResult {
+  formatJSONResponse(response: Record<string, unknown>, status = 200): APIGatewayProxyResult {
     return {
       statusCode: status,
       body: JSON.stringify(response),

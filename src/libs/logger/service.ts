@@ -7,10 +7,11 @@ import { multistream } from 'pino-multi-stream';
 import pinoPretty from 'pino-pretty';
 import { v4 as uuidv4 } from 'uuid';
 
+import { name } from '@/package.json';
+
 import { ApiException } from '../../utils/exception/error';
 import { ILoggerAdapter } from './adapter';
 import { ErrorType, MessageType } from './type';
-import { name } from '@/package.json';
 
 export class LoggerService implements ILoggerAdapter<HttpLogger> {
   httpLogger: HttpLogger;
@@ -18,15 +19,14 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
   private app: string;
 
   constructor() {
-    this.setApplication(name)
+    this.setApplication(name);
   }
 
   connect(logLevel?: LevelWithSilent): this {
     const pinoLogger = pino(
       {
         useLevelLabels: true,
-        level: logLevel || 'trace'
-
+        level: logLevel || 'trace',
       },
       multistream([
         {
@@ -69,16 +69,15 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
         ? { statusCode: error['statusCode'], message: error?.message }
         : errorResponse?.value();
 
-    const model =
-    {
+    const model = {
       ...response,
-      context: [context, this.context, error['context']['functionName'], error['context']].find(c => c),
+      context: [context, this.context, error['context']['functionName'], error['context']].find(Boolean),
       type: error?.name,
       traceid: this.getTraceId(error),
       timestamp: this.getDateFormat(),
       application: this.app,
       trace: error.stack.replace(/\n/g, '').replace('/', ''),
-    }
+    };
 
     this.httpLogger.logger.error(model, red(message || error.message));
   }
@@ -161,10 +160,12 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
       },
       customProps: (request): unknown => {
         const context = this.context || request.context.functionName;
-        request.ctx = context
+        request.ctx = context;
         const traceid = request.event?.headers?.traceId || request.id;
 
-        const path = request.event?.requestContext ? `${request.event.headers.Host}${request.event.requestContext.resourcePath}` : 'invoke';
+        const path = request.event?.requestContext
+          ? `${request.event.headers.Host}${request.event.requestContext.resourcePath}`
+          : 'invoke';
 
         this.httpLogger.logger.setBindings({
           traceid,

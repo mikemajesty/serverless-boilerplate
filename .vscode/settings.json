@@ -17,7 +17,7 @@
   },
   "editor.formatOnSave": true,
   "eslint.validate": [
-    "typescript"
+    "javascript",
   ],
   "files.exclude": {
     "**/*dist*": true,

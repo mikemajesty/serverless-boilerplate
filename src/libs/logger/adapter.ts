@@ -9,5 +9,5 @@ export interface ILoggerAdapter<T> {
   fatal(error: ErrorType, message?: string, context?: string): void;
   info({ message, context, obj }: MessageType): void;
   warn({ message, context, obj }: MessageType): void;
-  connect(logLevel: LogLevel): LoggerService
+  connect(logLevel: LogLevel): LoggerService;
 }
