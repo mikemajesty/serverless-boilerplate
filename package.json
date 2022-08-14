@@ -8,7 +8,7 @@
     "commit": "cz",
     "serverless:install": "yarn clean && yarn install",
     "lint": "./node_modules/.bin/eslint \"./src/**/*.{ts, js, json}\" --config \"./.eslintrc.js\" --fix",
-    "prepare": "husky install",
+    "prepare": "husky install && chmod ug+x .husky/pre-commit && .husky/commit-msg",
     "clean": "rm -rf \"node_modules\" && rm -rf \".esbuild\" && rm -rf \".serverless\" && rm -rf \"*lock\"",
     "test": "jest --detectOpenHandles --maxWorkers=50%"
   },
