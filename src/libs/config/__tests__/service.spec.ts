@@ -12,8 +12,10 @@ describe('ConfigService', () => {
       expect(service.get(Secrets.NODE_ENV)).toEqual('test');
     });
 
-    test('should thorw error of undefined ENV', () => {
-      expect(service.get(Secrets.AWS_REGION)).toBeUndefined();
+    test('should throw error of undefined ENV', () => {
+      expect(() => service.get(Secrets.AWS_REGION)).toThrowError(
+        `${Secrets.AWS_REGION} is not defined in environment variables`,
+      );
     });
   });
 });
