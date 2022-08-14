@@ -1,1 +1,4 @@
 .eslintrc.js
+
+jest.setup.js
+jest.config.js
