@@ -10,7 +10,7 @@ describe('ConfigService', () => {
 
   describe('get', () => {
     test('should get ENV successfully', () => {
-      expect(service.get(Secrets.NODE_ENV)).toEqual('test');
+      expect(service.get(Secrets.ENV)).toEqual('test');
     });
 
     test('should throw error of undefined ENV', () => {

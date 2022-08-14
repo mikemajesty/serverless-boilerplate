@@ -1,6 +1,5 @@
-import type { AWS } from '@serverless/typescript';
-
 import hello from '@functions/hello';
+import type { AWS } from '@serverless/typescript';
 
 const serverlessConfiguration: AWS = {
   service: 'serverless-boilerplate',
@@ -17,11 +16,20 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
-      AWS_ACCESS_KEY_ID: '${env:AWS_ACCESS_KEY_ID}'
+      ENV: '${env:NODE_ENV}',
+      AWS_ACCESS_KEY_ID: '${env:AWS_ACCESS_KEY_ID}',
+      AWS_REGION: '${env:AWS_REGION}',
     },
   },
-  // import the function via paths
-  functions: { hello },
+  functions: {
+    hello: {
+      handler: hello.handler,
+      events: hello.events,
+      environment: {
+        DUMMY_ENV: '${env:DUMMY_ENV}',
+      },
+    },
+  },
   package: { individually: true },
   custom: {
     esbuild: {

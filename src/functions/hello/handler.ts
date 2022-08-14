@@ -6,8 +6,8 @@ const hello: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) =
   const message = `Hello ${event.body.name}, welcome to the exciting Serverless world!`;
 
   return LambdaService.formatJSONResponse({
-    message,
-    event,
+    data: { message },
+    ...LambdaService.formatPartialResponse(event),
   });
 };
 

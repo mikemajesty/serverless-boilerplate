@@ -3,19 +3,27 @@ import middyJsonBodyParser from '@middy/http-json-body-parser';
 import { errorMiddleware } from '@utils/middlewares/error';
 import { APIGatewayProxyResult, Context } from 'aws-lambda';
 
+import { ResponsePartial, ResponseType } from './types';
+
 export const LambdaService = {
   middyfy(handler): middy.MiddyfiedHandler<unknown, unknown, unknown, Context> {
     return middy(handler).use(middyJsonBodyParser()).use(errorMiddleware());
   },
 
-  formatJSONResponse(response: Record<string, unknown>, status = 200): APIGatewayProxyResult {
+  formatJSONResponse(response: ResponseType): APIGatewayProxyResult {
     return {
-      statusCode: status,
+      statusCode: [response.statusCode, 200].find(Boolean) as number,
       body: JSON.stringify(response),
     };
   },
 
   handlerPath(context: string): string {
     return `${context.split(process.cwd())[1].slice(1).replace(/\\/g, '/')}`;
+  },
+
+  formatPartialResponse(event): ResponsePartial {
+    return {
+      traceId: event.traceId,
+    };
   },
 };

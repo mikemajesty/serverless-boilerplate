@@ -6,3 +6,15 @@ type ValidatedAPIGatewayProxyEvent<S> = Omit<APIGatewayProxyEvent, 'body'> & {
 };
 
 export type ValidatedEventAPIGatewayProxyEvent<S> = Handler<ValidatedAPIGatewayProxyEvent<S>, APIGatewayProxyResult>;
+
+export type ResponsePartial = {
+  traceId?: string;
+  statusCode?: number;
+};
+
+export type ResponseType = {
+  data: Record<string, unknown>;
+  error?: Record<string, unknown>;
+  traceId?: string;
+  statusCode?: number;
+};

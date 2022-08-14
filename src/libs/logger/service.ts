@@ -73,7 +73,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
       ...response,
       context: [context, this.context, error['context']['functionName'], error['context']].find(Boolean),
       type: error?.name,
-      traceid: this.getTraceId(error),
+      traceId: this.getTraceId(error),
       timestamp: this.getDateFormat(),
       application: this.app,
       trace: error.stack.replace(/\n/g, '').replace('/', ''),
@@ -83,18 +83,17 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
   }
 
   fatal(error: ApiException, message?: string, context?: string): void {
-    this.httpLogger.logger.fatal(
-      {
-        ...(error.getResponse() as object),
-        context: context || this.context,
-        type: error.name,
-        traceid: this.getTraceId(error),
-        timestamp: this.getDateFormat(),
-        application: this.app,
-        trace: error.stack.replace(/\n/g, '').replace('/', ''),
-      },
-      red(message || error.message),
-    );
+    const model = {
+      ...(error.getResponse() as object),
+      context: context || this.context,
+      type: error.name,
+      traceId: this.getTraceId(error),
+      timestamp: this.getDateFormat(),
+      application: this.app,
+      trace: error.stack.replace(/\n/g, '').replace('/', ''),
+    };
+
+    this.httpLogger.logger.fatal(model, red(message || error.message));
   }
 
   warn({ message, context, obj }: MessageType): void {
@@ -161,14 +160,14 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
       customProps: (request): unknown => {
         const context = this.context || request.context.functionName;
         request.ctx = context;
-        const traceid = request.event?.headers?.traceId || request.id;
+        const traceId = request.event?.headers?.traceId || request.id;
 
         const path = request.event?.requestContext
           ? `${request.event.headers.Host}${request.event.requestContext.resourcePath}`
           : 'invoke';
 
         this.httpLogger.logger.setBindings({
-          traceid,
+          traceId,
           application: this.app,
           context: context,
           path,
@@ -176,7 +175,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
         });
 
         return {
-          traceid,
+          traceId,
           application: this.app,
           context: context,
           path,
@@ -219,6 +218,6 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
 
   private getTraceId(error): string {
     if (typeof error === 'string') return uuidv4();
-    return [error.traceid, this.httpLogger.logger.bindings()?.tranceId].find(Boolean);
+    return [error.traceId, this.httpLogger.logger.bindings()?.tranceId].find(Boolean);
   }
 }

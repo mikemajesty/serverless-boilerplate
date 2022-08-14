@@ -12,11 +12,19 @@ export const errorMiddleware = ():
   | MiddlewareObj<unknown, unknown, unknown, Context>[] => {
   const customMiddlewareBefore = async (request) => {
     const { event } = request;
-    event.headers.traceId = uuidv4();
-    request.id = event.headers.traceId;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    LoggerService.httpLogger(request, { on: () => true } as any);
+    if (event.headers?.traceid) {
+      event.headers.traceId = event.headers?.traceid;
+    }
+
+    if (!event.headers.traceId) {
+      event.headers.traceId = uuidv4();
+    }
+
+    request.id = event.headers.traceId;
+    request.event.traceId = request.id;
+
+    LoggerService.httpLogger(request, { on: () => true } as never);
 
     LoggerService.info({
       message: `Lambda: ${request.ctx.functionName || request.context.functionName} in processing`,
@@ -25,27 +33,27 @@ export const errorMiddleware = ():
 
   const customMiddlewareAfter = async (request) => {
     const { response } = request;
-    response.id = request.id;
     request.response = response;
+    const statusCode = request.response?.statusCode || 200;
     LoggerService.info({
       message: 'Success',
-      obj: { statusCode: request.response?.statusCode || 200 },
+      obj: { statusCode },
     });
   };
 
   const customMiddlewareOnError = async (request) => {
     const error = new ApiException(request.error.message, request.error.statusCode, request.context);
-    error.traceid = request.id;
+    error.traceId = request.id;
     LoggerService.error(error);
     const statusCode = request.error.statusCode || 500;
     return LambdaService.formatJSONResponse({
       error: {
         context: request.ctx || request.context.functionName,
         message: errors[request.error.statusCode] || request.error.message,
-        statusCode,
         traceId: request.id,
       },
       statusCode,
+      data: undefined,
     });
   };
 

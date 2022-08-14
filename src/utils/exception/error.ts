@@ -4,7 +4,7 @@ import { HttpStatus } from './status';
 type Response = any;
 
 export class ApiException extends Error {
-  traceid: string;
+  traceId: string;
   statusCode: number;
   code?: string;
   config?: unknown;
