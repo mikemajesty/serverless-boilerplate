@@ -4,7 +4,6 @@ const { compilerOptions } = require('./tsconfig.paths.json');
 module.exports = {
   collectCoverage: true,
   moduleFileExtensions: ['js', 'json', 'ts'],
-  roots: ['src'],
   testRegex: '.*\\.spec\\.ts$',
   transform: {
     '^.+\\.ts$': 'ts-jest',

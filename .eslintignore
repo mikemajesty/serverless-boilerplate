@@ -2,3 +2,4 @@
 
 jest.setup.js
 jest.config.js
+commitlint.config.js
