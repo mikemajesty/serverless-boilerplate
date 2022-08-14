@@ -3,6 +3,7 @@ import { Secrets } from '../types';
 
 describe('ConfigService', () => {
   let service: ConfigService;
+
   beforeEach(() => {
     service = new ConfigService();
   });

@@ -22,9 +22,11 @@ export class ApiException extends Error {
   }
 
   constructor(error: Response, status?: HttpStatus, private readonly context?: string) {
-    super(error || error.message);
-    this.message = error || error.message;
-    this.statusCode = status || HttpStatus.INTERNAL_SERVER_ERROR;
+    const err = [error, error.message].find(Boolean);
+    super(err);
+    this.message = err;
+    this.name = ApiException.name;
+    this.statusCode = [status, HttpStatus.INTERNAL_SERVER_ERROR].find(Boolean);
 
     if (this.context) {
       this.context = this.context;

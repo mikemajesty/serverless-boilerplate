@@ -1,5 +1,4 @@
 export const errors = {
-  ECONNREFUSED: 'Connection Refused',
   '400': 'Bad Request',
   '401': 'Unauthorized',
   '403': 'Forbidden',

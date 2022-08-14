@@ -82,7 +82,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
     this.httpLogger.logger.error(model, red(message || error.message));
   }
 
-  fatal(error: ErrorType, message?: string, context?: string): void {
+  fatal(error: ApiException, message?: string, context?: string): void {
     this.httpLogger.logger.fatal(
       {
         ...(error.getResponse() as object),
@@ -138,7 +138,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
       customSuccessMessage: (res) => {
         return `request ${res.statusCode >= 400 ? red('errro') : green('success')} with status code: ${res.statusCode}`;
       },
-      customErrorMessage: function (error: Error, res: ServerResponse) {
+      customErrorMessage: function (error: Error | ApiException, res: ServerResponse) {
         return `request ${red(error.name.toLowerCase())} with status code: ${res.statusCode} `;
       },
       genReqId: (request) => {
@@ -197,7 +197,8 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
     };
   }
 
-  private getErrorResponse(error: ErrorType) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private getErrorResponse(error: any) {
     const isFunction = typeof error?.getResponse === 'function';
     return [
       {

@@ -6,6 +6,6 @@ export type MessageType = {
   obj?: object;
 };
 
-export type ErrorType = ApiException;
+export type ErrorType = ApiException | Error;
 
 export type LogLevel = 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace' | 'silent';
