@@ -3,3 +3,5 @@
 jest.setup.js
 jest.config.js
 commitlint.config.js
+package-lock.json
+yarn.lockjson
