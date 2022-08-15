@@ -26,7 +26,7 @@ export class ApiException extends Error {
     super(err);
     this.message = err;
     this.name = ApiException.name;
-    this.statusCode = [status, HttpStatus.INTERNAL_SERVER_ERROR].find(Boolean);
+    this.statusCode = [status, Number(this.getStatus()), HttpStatus.INTERNAL_SERVER_ERROR].find(Boolean);
 
     if (this.context) {
       this.context = this.context;

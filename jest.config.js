@@ -2,17 +2,18 @@ const { pathsToModuleNameMapper } = require('ts-jest');
 const { compilerOptions } = require('./tsconfig.paths.json');
 
 module.exports = {
-  collectCoverage: true,
+  collectCoverage: false,
   moduleFileExtensions: ['js', 'json', 'ts'],
   testRegex: '.*\\.spec\\.ts$',
+  rootDir: './src',
   transform: {
-    '^.+\\.ts$': 'ts-jest',
+    '^.+\\.(t|j)s$': 'ts-jest',
   },
-  coveragePathIgnorePatterns: ['node_modules', 'coverage', '.esbuild/*', '.serverless/*'],
-  collectCoverageFrom: ['**/*.ts'],
-  coverageDirectory: './coverage',
+  collectCoverageFrom: ['**/*.{js,ts}'],
+  coveragePathIgnorePatterns: ['index.ts', 'schema.ts', 'static/'],
+  coverageDirectory: '../coverage',
   testEnvironment: 'node',
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/../jest.setup.js'],
   coverageThreshold: {
     global: {
       lines: 90,
@@ -22,7 +23,7 @@ module.exports = {
     },
   },
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
-    prefix: '<rootDir>/',
+    prefix: '<rootDir>/..',
   }),
   coverageReporters: ['json-summary', 'lcov'],
 };

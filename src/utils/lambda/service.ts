@@ -12,7 +12,7 @@ export const LambdaService = {
 
   formatJSONResponse(response: ResponseType): APIGatewayProxyResult {
     return {
-      statusCode: [response.statusCode, 200].find(Boolean) as number,
+      statusCode: [response.statusCode, 200].find((s) => s) as number,
       body: JSON.stringify(response),
     };
   },

@@ -1,5 +1,5 @@
 import { LoggerService } from './service';
-import { ErrorType, LogLevel, MessageType } from './type';
+import { ErrorType, LogLevel, MessageType } from './types';
 
 export interface ILoggerAdapter<T> {
   httpLogger: T;
@@ -9,5 +9,7 @@ export interface ILoggerAdapter<T> {
   fatal(error: ErrorType, message?: string, context?: string): void;
   info({ message, context, obj }: MessageType): void;
   warn({ message, context, obj }: MessageType): void;
-  connect(logLevel: LogLevel): LoggerService;
+  connect(logLevel?: LogLevel): LoggerService;
+  getPinoHttpConfig(pinoLogger: unknown): unknown;
+  getPinoConfig(): unknown;
 }

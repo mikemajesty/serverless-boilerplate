@@ -11,7 +11,7 @@ import { name } from '@/package.json';
 
 import { ApiException } from '../../utils/exception/error';
 import { ILoggerAdapter } from './adapter';
-import { ErrorType, MessageType } from './type';
+import { ErrorType, MessageType } from './types';
 
 export class LoggerService implements ILoggerAdapter<HttpLogger> {
   httpLogger: HttpLogger;
@@ -71,7 +71,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
 
     const model = {
       ...response,
-      context: [context, this.context, error['context']['functionName'], error['context']].find(Boolean),
+      context: [context, this.context, error['context']].find(Boolean),
       type: error?.name,
       traceId: this.getTraceId(error),
       timestamp: this.getDateFormat(),
@@ -84,7 +84,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
 
   fatal(error: ApiException, message?: string, context?: string): void {
     const model = {
-      ...(error.getResponse() as object),
+      ...error,
       context: context || this.context,
       type: error.name,
       traceId: this.getTraceId(error),
@@ -109,7 +109,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
     this.httpLogger.logger.warn(_message);
   }
 
-  private getPinoConfig() {
+  getPinoConfig() {
     return {
       colorize: true,
       levelFirst: true,
@@ -130,7 +130,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
     };
   }
 
-  private getPinoHttpConfig(pinoLogger: Logger): unknown {
+  getPinoHttpConfig(pinoLogger: Logger): unknown {
     return {
       logger: pinoLogger,
       quietReqLogger: true,
