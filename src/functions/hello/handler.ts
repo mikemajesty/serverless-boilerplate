@@ -1,4 +1,5 @@
 import { LambdaService, ValidatedEventAPIGatewayProxyEvent } from '@utils/lambda';
+import { errorMiddleware } from '@utils/middlewares/error';
 
 import schema from './schema';
 
@@ -11,4 +12,4 @@ const hello: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) =
   });
 };
 
-export const main = LambdaService.middyfy(hello);
+export const main = LambdaService.middyfy(hello).use(errorMiddleware());

@@ -1,13 +1,12 @@
 import middy from '@middy/core';
 import middyJsonBodyParser from '@middy/http-json-body-parser';
-import { errorMiddleware } from '@utils/middlewares/error';
 import { APIGatewayProxyResult, Context } from 'aws-lambda';
 
 import { ResponsePartial, ResponseType } from './types';
 
 export const LambdaService = {
   middyfy(handler): middy.MiddyfiedHandler<unknown, unknown, unknown, Context> {
-    return middy(handler).use(middyJsonBodyParser()).use(errorMiddleware());
+    return middy(handler).use(middyJsonBodyParser());
   },
 
   formatJSONResponse(response: ResponseType): APIGatewayProxyResult {

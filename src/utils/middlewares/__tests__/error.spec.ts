@@ -9,7 +9,7 @@ describe('errorMiddleware', () => {
 
       middleware.before({
         event: { headers: { traceid: 'traceid' } },
-        ctx: { functionName: 'functionName' },
+        context: { functionName: 'functionName' },
       });
 
       expect(LoggerService.info).toHaveBeenCalled();
@@ -30,7 +30,7 @@ describe('errorMiddleware', () => {
     test('should throw missing function name', () => {
       const middleware = errorMiddleware();
 
-      middleware.before({ event: { headers: {} }, context: {} });
+      middleware.before({ event: { headers: {} } });
       expect(LoggerService.error).toHaveBeenCalled();
     });
   });

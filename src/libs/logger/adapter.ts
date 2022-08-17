@@ -8,6 +8,8 @@ export interface ILoggerAdapter<T> {
   error(error: ErrorType, message?: string, context?: string): void;
   fatal(error: ErrorType, message?: string, context?: string): void;
   info({ message, context, obj }: MessageType): void;
+  trace(message: string): void;
+  debug({ message, context, obj }: MessageType): void;
   warn({ message, context, obj }: MessageType): void;
   connect(logLevel?: LogLevel): LoggerService;
   getPinoHttpConfig(pinoLogger: unknown): unknown;

@@ -9,6 +9,7 @@ export class ApiException extends Error {
   code?: string;
   config?: unknown;
   user?: string;
+  ctx?: string;
 
   getStatus() {
     return this.statusCode || this.code;
@@ -29,7 +30,7 @@ export class ApiException extends Error {
     this.statusCode = [status, Number(this.getStatus()), HttpStatus.INTERNAL_SERVER_ERROR].find(Boolean);
 
     if (this.context) {
-      this.context = this.context;
+      this.ctx = this.context;
     }
   }
 }

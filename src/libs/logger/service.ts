@@ -1,4 +1,3 @@
-import { green, red, yellow } from 'colors/safe';
 import { DateTime } from 'luxon';
 import { ServerResponse } from 'node:http';
 import { LevelWithSilent, Logger, pino } from 'pino';
@@ -9,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { name } from '@/package.json';
 
-import { ApiException } from '../../utils/exception/error';
+import { ApiException } from '../../utils/exception';
 import { ILoggerAdapter } from './adapter';
 import { ErrorType, MessageType } from './types';
 
@@ -48,17 +47,20 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
     this.app = app;
   }
 
+  trace(message: string): void {
+    this.httpLogger.logger.trace(message);
+  }
+
   info({ message, context, obj }: MessageType): void {
-    const _message = green(message);
+    this.httpLogger.logger.info({ context, ...obj }, message);
+  }
 
-    this.setContext(context);
+  warn({ message, context, obj }: MessageType): void {
+    this.httpLogger.logger.warn({ context, ...obj }, message);
+  }
 
-    if (obj) {
-      this.httpLogger.logger.info(obj, _message);
-      return;
-    }
-
-    this.httpLogger.logger.info(_message);
+  debug({ message, context, obj }: MessageType): void {
+    this.httpLogger.logger.debug({ context, ...obj }, message);
   }
 
   error(error: ErrorType, message?: string, context?: string): void {
@@ -71,42 +73,33 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
 
     const model = {
       ...response,
-      context: [context, this.context, error['context']].find(Boolean),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      functionName: (error as any)?.context?.functionName,
+      context: error['context'] || context,
       type: error?.name,
+      status: 'Error',
       traceId: this.getTraceId(error),
       timestamp: this.getDateFormat(),
       application: this.app,
       trace: error.stack.replace(/\n/g, '').replace('/', ''),
     };
 
-    this.httpLogger.logger.error(model, red(message || error.message));
+    this.httpLogger.logger.error(model, [message, error.message].find(Boolean));
   }
 
   fatal(error: ApiException, message?: string, context?: string): void {
     const model = {
       ...error,
-      context: context || this.context,
+      context: error['context'] || context,
       type: error.name,
+      status: 'Error',
       traceId: this.getTraceId(error),
       timestamp: this.getDateFormat(),
       application: this.app,
       trace: error.stack.replace(/\n/g, '').replace('/', ''),
     };
 
-    this.httpLogger.logger.fatal(model, red(message || error.message));
-  }
-
-  warn({ message, context, obj }: MessageType): void {
-    const _message = yellow(message);
-
-    this.setContext(context);
-
-    if (obj) {
-      this.httpLogger.logger.warn(obj, _message);
-      return;
-    }
-
-    this.httpLogger.logger.warn(_message);
+    this.httpLogger.logger.fatal(model, [message, error.message].find(Boolean));
   }
 
   getPinoConfig() {
@@ -117,10 +110,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
       quietReqLogger: true,
       messageFormat: (log: unknown, messageKey: string) => {
         const message = log[String(messageKey)];
-        const context = [this.context, this.app]?.find((c: string) => c);
-        if (context) return `[${context}] ${message}`;
-
-        return `${message}`;
+        return `[${this.app}}] ${message}`;
       },
       customPrettifiers: {
         time: () => {
@@ -135,10 +125,10 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
       logger: pinoLogger,
       quietReqLogger: true,
       customSuccessMessage: (res) => {
-        return `request ${res.statusCode >= 400 ? red('errro') : green('success')} with status code: ${res.statusCode}`;
+        return `request ${res.statusCode >= 400 ? 'errro' : 'success'} with status code: ${res.statusCode}`;
       },
       customErrorMessage: function (error: Error | ApiException, res: ServerResponse) {
-        return `request ${red(error.name.toLowerCase())} with status code: ${res.statusCode} `;
+        return `request ${error.name.toLowerCase()} with status code: ${res.statusCode} `;
       },
       genReqId: (request) => {
         return request.event.headers.traceId;
@@ -158,8 +148,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
         res: pino.stdSerializers.res,
       },
       customProps: (request): unknown => {
-        const context = this.context || request.context.functionName;
-        request.ctx = context;
+        const functionName = this.context || request.context.functionName;
         const traceId = request.event?.headers?.traceId || request.id;
 
         const path = request.event?.requestContext
@@ -169,7 +158,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
         this.httpLogger.logger.setBindings({
           traceId,
           application: this.app,
-          context: context,
+          functionName: functionName,
           path,
           timestamp: this.getDateFormat(),
         });
@@ -177,7 +166,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
         return {
           traceId,
           application: this.app,
-          context: context,
+          functionName: functionName,
           path,
           timestamp: this.getDateFormat(),
         };

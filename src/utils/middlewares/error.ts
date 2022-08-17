@@ -9,7 +9,7 @@ import { IMiddlewareAdapter } from './adapter';
 export const errorMiddleware = (): IMiddlewareAdapter => {
   const customMiddlewareBefore = async (request) => {
     try {
-      const { event } = request;
+      const { event, context } = request;
 
       if (event.headers?.traceid) {
         event.headers.traceId = event.headers?.traceid;
@@ -24,8 +24,10 @@ export const errorMiddleware = (): IMiddlewareAdapter => {
 
       LoggerService.httpLogger(request, { on: () => true } as never);
 
+      const functionName = [context.functionName, request.context.functionName].find(Boolean);
+
       LoggerService.info({
-        message: `Lambda: ${request.ctx.functionName || request.context.functionName} in processing`,
+        message: `Lambda: ${functionName} in processing`,
       });
     } catch (error) {
       LoggerService.error(error);
@@ -39,21 +41,27 @@ export const errorMiddleware = (): IMiddlewareAdapter => {
     request.response = response;
     LoggerService.info({
       message: 'Success',
-      obj: { statusCode },
+      obj: { statusCode, status: 'Success' },
     });
   };
 
   const customMiddlewareOnError = async (request) => {
-    const error = new ApiException(request.error.message, request.error.statusCode, request.context);
+    const error = new ApiException(request.error.message, request.error.statusCode, request.error.ctx);
     error.traceId = request.id;
+
+    if (request.error?.name !== ApiException.name) {
+      error.name = 'Error';
+    }
+
     LoggerService.error(error);
 
     try {
       const statusCode = request.error.statusCode || 500;
       return LambdaService.formatJSONResponse({
         error: {
-          context: request.ctx || request.context.functionName,
-          message: errors[request.error.statusCode] || request.error.message,
+          functionName: request.context.functionName,
+          context: request.error?.context,
+          message: [errors[request.error.statusCode], request.error.message].find(Boolean),
           traceId: request.id,
         },
         statusCode,

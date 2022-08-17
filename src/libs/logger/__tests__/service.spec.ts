@@ -14,6 +14,7 @@ describe('LoggerService', () => {
       logger: {
         error: jest.fn(),
         warn: jest.fn(),
+        debug: jest.fn(),
         info: jest.fn(),
         trace: jest.fn(),
         fatal: jest.fn(),
@@ -52,6 +53,20 @@ describe('LoggerService', () => {
       });
 
       expect(loggerService.httpLogger.logger.info).toHaveBeenCalled();
+    });
+  });
+
+  describe('debug', () => {
+    test('should debug successfully with all parameters', () => {
+      loggerService.debug({ message: 'message', obj: { key: 'value' }, context: 'context' });
+
+      expect(loggerService.httpLogger.logger.debug).toHaveBeenCalled();
+    });
+
+    test('should debug successfully with no obj and context', () => {
+      loggerService.debug({ message: 'message' });
+
+      expect(loggerService.httpLogger.logger.debug).toHaveBeenCalled();
     });
   });
 
@@ -190,7 +205,7 @@ describe('LoggerService', () => {
           headers: { traceId: '12' },
           protocol: 'http',
         });
-        expect(res).toHaveProperty('context');
+        expect(res).toHaveProperty('functionName');
         expect(res).toHaveProperty('path');
         expect(res).toHaveProperty('timestamp');
         expect(res).toHaveProperty('traceId');
@@ -206,7 +221,7 @@ describe('LoggerService', () => {
           protocol: 'http',
         });
 
-        expect(res).toHaveProperty('context');
+        expect(res).toHaveProperty('functionName');
         expect(res).toHaveProperty('path');
         expect(res).toHaveProperty('timestamp');
         expect(res).toHaveProperty('traceId');
