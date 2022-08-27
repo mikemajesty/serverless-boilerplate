@@ -1,3 +1,4 @@
-export interface IHttpAdapter<T> {
+import { AxiosInstance } from 'axios';
+export interface IHttpAdapter<T = AxiosInstance> {
   instance(config?: unknown): T;
 }

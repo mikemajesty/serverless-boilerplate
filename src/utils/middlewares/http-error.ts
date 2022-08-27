@@ -6,10 +6,15 @@ import { v4 as uuidv4 } from 'uuid';
 import { errors } from '../static/erros';
 import { IMiddlewareAdapter } from './adapter';
 
-export const errorMiddleware = (): IMiddlewareAdapter => {
+/**
+ * @description http request only
+ */
+export const httpErrorHandlerMiddleware = (): IMiddlewareAdapter => {
   const customMiddlewareBefore = async (request) => {
     try {
-      const { event, context } = request;
+      const { event } = request;
+
+      event.logger = LoggerService;
 
       if (event.headers?.traceid) {
         event.headers.traceId = event.headers?.traceid;
@@ -24,10 +29,8 @@ export const errorMiddleware = (): IMiddlewareAdapter => {
 
       LoggerService.httpLogger(request, { on: () => true } as never);
 
-      const functionName = [context.functionName, request.context.functionName].find(Boolean);
-
       LoggerService.info({
-        message: `Lambda: ${functionName} in processing`,
+        message: `Lambda: ${request.context.functionName} in processing`,
       });
     } catch (error) {
       LoggerService.error(error);
@@ -41,28 +44,27 @@ export const errorMiddleware = (): IMiddlewareAdapter => {
     request.response = response;
     LoggerService.info({
       message: 'Success',
-      obj: { statusCode, status: 'Success' },
+      obj: { statusCode },
     });
   };
 
   const customMiddlewareOnError = async (request) => {
-    const error = new ApiException(request.error.message, request.error.statusCode, request.error.ctx);
-    error.traceId = request.id;
+    const message = [request.error?.response?.statusText, request.error.message].find(Boolean);
+    const status = [request.error?.response?.status, request.error?.statusCode, request.error?.status].find(Boolean);
+    const error = new ApiException(message, status, request.context);
 
-    if (request.error?.name !== ApiException.name) {
-      error.name = 'Error';
-    }
+    error.traceId = request.id;
 
     LoggerService.error(error);
 
     try {
-      const statusCode = request.error.statusCode || 500;
+      const statusCode = [request.error.statusCode, request.statusCode, 500].find(Boolean);
       return LambdaService.formatJSONResponse({
         error: {
-          functionName: request.context.functionName,
-          context: request.error?.context,
-          message: [errors[request.error.statusCode], request.error.message].find(Boolean),
+          context: [request.ctx, request.context.functionName].find(Boolean),
+          message: [errors[String(status)], message].find(Boolean),
           traceId: request.id,
+          providerStatus: [request.error?.status, request.error?.response?.status].find(Boolean),
         },
         statusCode,
         data: undefined,

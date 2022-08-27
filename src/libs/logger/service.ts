@@ -1,8 +1,7 @@
 import { DateTime } from 'luxon';
 import { ServerResponse } from 'node:http';
-import { LevelWithSilent, Logger, pino } from 'pino';
+import { LevelWithSilent, Logger, multistream, pino } from 'pino';
 import { HttpLogger, pinoHttp } from 'pino-http';
-import { multistream } from 'pino-multi-stream';
 import pinoPretty from 'pino-pretty';
 import { v4 as uuidv4 } from 'uuid';
 

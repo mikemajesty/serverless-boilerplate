@@ -1,7 +1,9 @@
+import { HttpLogger } from 'pino-http';
+
 import { LoggerService } from './service';
 import { ErrorType, LogLevel, MessageType } from './types';
 
-export interface ILoggerAdapter<T> {
+export interface ILoggerAdapter<T = HttpLogger> {
   httpLogger: T;
   setContext(context: string): void;
   setApplication(app: string): void;

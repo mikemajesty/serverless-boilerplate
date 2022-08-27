@@ -1,11 +1,11 @@
 import middy from '@middy/core';
 import middyJsonBodyParser from '@middy/http-json-body-parser';
-import { APIGatewayProxyResult, Context } from 'aws-lambda';
+import { APIGatewayProxyResult, Context, Handler } from 'aws-lambda';
 
 import { ResponsePartial, ResponseType } from './types';
 
 export const LambdaService = {
-  middyfy(handler): middy.MiddyfiedHandler<unknown, unknown, unknown, Context> {
+  middyfy(handler: Handler): middy.MiddyfiedHandler<unknown, unknown, unknown, Context> {
     return middy(handler).use(middyJsonBodyParser());
   },
 
@@ -13,6 +13,8 @@ export const LambdaService = {
     return {
       statusCode: [response.statusCode, 200].find((s) => s) as number,
       body: JSON.stringify(response),
+      headers: { 'Content-Type': 'application/json' },
+      isBase64Encoded: false,
     };
   },
 

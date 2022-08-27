@@ -7,6 +7,8 @@ describe('LambdaService', () => {
     test('should formatJSONResponse successfully with statusCode', () => {
       expect(LambdaService.formatJSONResponse({ statusCode: 200, data: { ok: true } })).toEqual({
         body: '{"statusCode":200,"data":{"ok":true}}',
+        headers: { 'Content-Type': 'application/json' },
+        isBase64Encoded: false,
         statusCode: 200,
       });
     });
@@ -14,6 +16,8 @@ describe('LambdaService', () => {
     test('should formatJSONResponse successfully without statusCode', () => {
       expect(LambdaService.formatJSONResponse({ data: { ok: true } })).toEqual({
         body: '{"data":{"ok":true}}',
+        headers: { 'Content-Type': 'application/json' },
+        isBase64Encoded: false,
         statusCode: 200,
       });
     });

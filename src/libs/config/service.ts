@@ -1,10 +1,10 @@
 import { ApiException, HttpStatus } from '@utils/exception';
 
 import { IConfigAdapter } from './adapter';
-import { Secrets, SecretsTypes } from './types';
+import { Secrets } from './types';
 
 export class ConfigService implements IConfigAdapter {
-  get(key: Secrets): SecretsTypes {
+  get<T>(key: Secrets): T {
     const env = process.env[String(key)];
     if (!env)
       throw new ApiException(
@@ -13,6 +13,6 @@ export class ConfigService implements IConfigAdapter {
         'ConfigService/get',
       );
 
-    return env;
+    return env as unknown as T;
   }
 }
