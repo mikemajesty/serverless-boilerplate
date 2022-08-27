@@ -30,6 +30,7 @@ describe('httpErrorHandlerMiddleware', () => {
     test('should throw missing function name', () => {
       const middleware = httpErrorHandlerMiddleware();
 
+      jest.spyOn(LoggerService, 'error').mockReturnValue(null);
       middleware.before({ event: { headers: {} } });
       expect(LoggerService.error).toHaveBeenCalled();
     });

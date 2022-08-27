@@ -15,6 +15,6 @@ describe('validate', () => {
   });
 
   test('should throw validate error', () => {
-    expect(() => validate({ fake: 'dummy' }, schema)).toThrowError(' requires property "name"');
+    expect(() => validate({ fake: 'dummy' }, schema)).toThrowError('requires property "name"');
   });
 });

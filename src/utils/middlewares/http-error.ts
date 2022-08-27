@@ -20,7 +20,7 @@ export const httpErrorHandlerMiddleware = (): IMiddlewareAdapter => {
         event.headers.traceId = event.headers?.traceid;
       }
 
-      if (!event.headers.traceId) {
+      if (!event.headers?.traceId) {
         event.headers.traceId = uuidv4();
       }
 

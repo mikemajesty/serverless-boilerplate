@@ -7,7 +7,7 @@ export default (body, schema, options?: Options): ValidatorResult => {
 
   if (isValid.errors.length) {
     throw new ApiException(
-      isValid.errors.map((e) => `${e.path} ${e.message}`).join(', '),
+      isValid.errors.map((e) => `${e.path} ${e.message}`.trim()).join(', '),
       HttpStatus.PRECONDITION_FAILED,
       'invalid-body',
     );
