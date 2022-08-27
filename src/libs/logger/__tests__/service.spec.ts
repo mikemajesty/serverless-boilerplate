@@ -70,6 +70,14 @@ describe('LoggerService', () => {
     });
   });
 
+  describe('trace', () => {
+    test('should trace successfully with all parameters', () => {
+      loggerService.trace('message');
+
+      expect(loggerService.httpLogger.logger.trace).toHaveBeenCalled();
+    });
+  });
+
   describe('error', () => {
     test('should error successfully with all parameters', () => {
       loggerService.error(new ApiException('error', 500, 'context'), 'error', 'context');

@@ -5,7 +5,6 @@ import { ErrorType, LogLevel, MessageType } from './types';
 
 export interface ILoggerAdapter<T = HttpLogger> {
   httpLogger: T;
-  setContext(context: string): void;
   setApplication(app: string): void;
   error(error: ErrorType, message?: string, context?: string): void;
   fatal(error: ErrorType, message?: string, context?: string): void;

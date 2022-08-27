@@ -13,7 +13,6 @@ import { ErrorType, MessageType } from './types';
 
 export class LoggerService implements ILoggerAdapter<HttpLogger> {
   httpLogger: HttpLogger;
-  private context: string;
   private app: string;
 
   constructor() {
@@ -24,7 +23,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
     const pinoLogger = pino(
       {
         useLevelLabels: true,
-        level: logLevel || 'trace',
+        level: [logLevel, 'trace'].find(Boolean),
       },
       multistream([
         {
@@ -36,10 +35,6 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
 
     this.httpLogger = pinoHttp(this.getPinoHttpConfig(pinoLogger));
     return this;
-  }
-
-  setContext(context: string): void {
-    this.context = context;
   }
 
   setApplication(app: string): void {
@@ -74,7 +69,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
       ...response,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       functionName: (error as any)?.context?.functionName,
-      context: error['context'] || context,
+      context: [error['context'], context].find(Boolean),
       type: error?.name,
       status: 'Error',
       traceId: this.getTraceId(error),
@@ -89,7 +84,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
   fatal(error: ApiException, message?: string, context?: string): void {
     const model = {
       ...error,
-      context: error['context'] || context,
+      context: [error['context'], context].find(Boolean),
       type: error.name,
       status: 'Error',
       traceId: this.getTraceId(error),
@@ -147,8 +142,8 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
         res: pino.stdSerializers.res,
       },
       customProps: (request): unknown => {
-        const functionName = this.context || request.context.functionName;
-        const traceId = request.event?.headers?.traceId || request.id;
+        const functionName = request.context.functionName;
+        const traceId = [request.event?.headers?.traceId, request.id].find(Boolean);
 
         const path = request.event?.requestContext
           ? `${request.event.headers.Host}${request.event.requestContext.resourcePath}`
@@ -191,7 +186,11 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
       {
         conditional: isFunction && typeof error.getResponse() === 'string',
         value: () =>
-          new ApiException(error.getResponse(), error.getStatus() || error['status'], error['context']).getResponse(),
+          new ApiException(
+            error.getResponse(),
+            [error.getStatus(), error['status']].find(Boolean),
+            error['context'],
+          ).getResponse(),
       },
       {
         conditional: isFunction && typeof error.getResponse() === 'object',
