@@ -1,7 +1,5 @@
 jest.setTimeout(5000);
 
-
-
 jest.mock('./src/libs/logger/index', () => ({
   LoggerService: ({
     connect: jest.fn(),
@@ -15,7 +13,13 @@ jest.mock('./src/libs/logger/index', () => ({
   }),
 }));
 
+jest.mock('uuid', () => ({
+  v4: () => '1'
+}))
 
+jest.spyOn(process, 'cwd').mockReturnValue(null)
+jest.spyOn(process, 'exit').mockReturnValue(null)
+
+
+// ENVS
 process.env.NODE_ENV = 'test'
-
-jest.spyOn(process, 'cwd')

@@ -20,10 +20,11 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
   }
 
   connect(logLevel?: LevelWithSilent): this {
+    const level = [logLevel, 'trace'].find(Boolean);
     const pinoLogger = pino(
       {
         useLevelLabels: true,
-        level: [logLevel, 'trace'].find(Boolean),
+        level: level,
       },
       multistream([
         {
@@ -94,6 +95,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
     };
 
     this.httpLogger.logger.fatal(model, [message, error.message].find(Boolean));
+    process.exit(1);
   }
 
   getPinoConfig() {
@@ -179,8 +181,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private getErrorResponse(error: any) {
+  private getErrorResponse(error) {
     const isFunction = typeof error?.getResponse === 'function';
     return [
       {
@@ -199,7 +200,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
     ].find((c) => c.conditional);
   }
 
-  private getDateFormat(date = new Date(), format = 'dd/MM/yyyy HH:mm:ss'): string {
+  private getDateFormat(date = new Date(), format = 'yyyy-MM-dd HH:mm:ss'): string {
     return DateTime.fromJSDate(date).setZone(process.env.TZ).toFormat(format);
   }
 

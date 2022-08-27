@@ -1,12 +1,11 @@
 import { ApiException } from '@utils/exception';
 import { setMock } from '@utils/test';
-import { HttpLogger } from 'pino-http';
 
 import { ILoggerAdapter } from '../adapter';
 import { LoggerService } from '../service';
 
 describe('LoggerService', () => {
-  let loggerService: ILoggerAdapter<HttpLogger>;
+  let loggerService: ILoggerAdapter;
   beforeEach(() => {
     loggerService = new LoggerService();
 

@@ -9,7 +9,7 @@ const hello: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
 ): Promise<APIGatewayProxyResult> => {
   const message = `Hello ${event.body.name}, welcome to the exciting Serverless world!`;
 
-  event.logger.debug({ message });
+  event.logger.trace(message);
 
   return LambdaService.formatJSONResponse({
     data: message,
@@ -17,4 +17,4 @@ const hello: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   });
 };
 
-export const main = LambdaService.middyfy(hello).use(httpErrorHandlerMiddleware());
+export const helloHandler = LambdaService.middyfy(hello).use(httpErrorHandlerMiddleware());
