@@ -1,5 +1,4 @@
 import { LoggerService } from '@libs/logger';
-import { ApiException } from '@utils/exception';
 import { LambdaService } from '@utils/lambda';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -50,12 +49,16 @@ export const httpErrorHandlerMiddleware = (): IMiddlewareAdapter => {
 
   const customMiddlewareOnError = async (request) => {
     const message = [request.error?.response?.statusText, request.error.message].find(Boolean);
-    const status = [request.error?.response?.status, request.error?.statusCode, request.error?.status].find(Boolean);
-    const error = new ApiException(message, status, request.context);
+    const status = [request.error?.response?.status, request.error?.statusCode, request.error?.status, 500].find(
+      Boolean,
+    );
 
-    error.traceId = request.id;
+    request.error['statusCode'] = status;
+    request.error['message'] = message;
+    request.error['context'] = request.context;
+    request.error['traceId'] = request.id;
 
-    LoggerService.error(error);
+    LoggerService.error(request.error);
 
     try {
       const statusCode = [request.error.statusCode, request.statusCode, 500].find(Boolean);

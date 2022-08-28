@@ -29,7 +29,7 @@ describe('main', () => {
     jest.spyOn(LoggerService, 'error').mockReturnValue(null);
 
     await expect(helloHandler(event, setMock({}))).resolves.toEqual({
-      body: '{"error":{"message":"Cannot read property \'name\' of undefined","traceId":"1"},"statusCode":500}',
+      body: '{"error":{"message":"Internal Server Error.","traceId":"1"},"statusCode":500}',
       headers: { 'Content-Type': 'application/json' },
       isBase64Encoded: false,
       statusCode: 500,

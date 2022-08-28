@@ -76,7 +76,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
       traceId: this.getTraceId(error),
       timestamp: this.getDateFormat(),
       application: this.app,
-      trace: error.stack.replace(/\n/g, '').replace('/', ''),
+      trace: error.stack,
     };
 
     this.httpLogger.logger.error(model, [message, error.message].find(Boolean));
@@ -91,7 +91,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
       traceId: this.getTraceId(error),
       timestamp: this.getDateFormat(),
       application: this.app,
-      trace: error.stack.replace(/\n/g, '').replace('/', ''),
+      trace: error,
     };
 
     this.httpLogger.logger.fatal(model, [message, error.message].find(Boolean));

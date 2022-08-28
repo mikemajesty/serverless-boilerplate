@@ -17,9 +17,17 @@ jest.mock('uuid', () => ({
   v4: () => '1'
 }))
 
+jest.mock('aws-sdk', () => ({
+  config: ({
+    update: jest.fn()
+  }),
+  SNS: jest.genMockFromModule('aws-sdk').SNS
+}))
+
 jest.spyOn(process, 'cwd').mockReturnValue(null)
 jest.spyOn(process, 'exit').mockReturnValue(null)
 
 
 // ENVS
 process.env.NODE_ENV = 'test'
+process.env.AWS_REGION = 'region'

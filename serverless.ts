@@ -1,4 +1,4 @@
-import hello from '@functions/hello';
+import httpHelloHandler from '@functions/http-hello';
 import type { AWS } from '@serverless/typescript';
 
 const serverlessConfiguration: AWS = {
@@ -22,13 +22,7 @@ const serverlessConfiguration: AWS = {
     },
   },
   functions: {
-    hello: {
-      handler: hello.handler,
-      events: hello.events,
-      environment: {
-        DUMMY_ENV: '${env:DUMMY_ENV}',
-      },
-    },
+    ['http-hello']: httpHelloHandler,
   },
   package: { individually: true },
   custom: {

@@ -76,7 +76,7 @@ describe('httpErrorHandlerMiddleware', () => {
       const res = await middleware.onError({ error, context: 'context', traceId: 'traceId' });
       expect(res).toEqual({
         statusCode: 500,
-        body: '{"error":{"message":"message"},"statusCode":500}',
+        body: '{"error":{"message":"Internal Server Error."},"statusCode":500}',
         headers: { 'Content-Type': 'application/json' },
         isBase64Encoded: false,
       });

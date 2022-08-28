@@ -19,6 +19,7 @@
   "dependencies": {
     "@middy/core": "^2.5.3",
     "@middy/http-json-body-parser": "^2.5.3",
+    "aws-sdk": "^2.1204.0",
     "axios": "^0.24.0",
     "luxon": "^2.4.0",
     "pino": "^7.11.0",

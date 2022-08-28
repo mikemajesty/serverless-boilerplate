@@ -1,5 +1,5 @@
 import { Secrets } from './types';
 
 export interface IConfigAdapter {
-  get<T>(key: Secrets): T;
+  get<T = string>(key: Secrets): T;
 }
