@@ -1,22 +1,35 @@
+import { IConfigAdapter, Secrets } from '@libs/config';
+import { ApiException } from '@utils/exception';
 import { DateTime } from 'luxon';
 import { ServerResponse } from 'node:http';
+import { Transform } from 'node:stream';
 import { LevelWithSilent, Logger, multistream, pino } from 'pino';
+import pinoElastic from 'pino-elasticsearch';
 import { HttpLogger, pinoHttp } from 'pino-http';
 import pinoPretty from 'pino-pretty';
 import { v4 as uuidv4 } from 'uuid';
 
 import { name } from '@/package.json';
 
-import { ApiException } from '../../utils/exception';
 import { ILoggerAdapter } from './adapter';
 import { ErrorType, MessageType } from './types';
 
 export class LoggerService implements ILoggerAdapter<HttpLogger> {
   httpLogger: HttpLogger;
   private app: string;
+  private streamToElastic: Transform;
 
-  constructor() {
+  constructor(private config: IConfigAdapter) {
     this.setApplication(name);
+    const index = `serverless-logs-${this.getDateFormat(new Date(), 'yyyy-MM')}`;
+
+    this.streamToElastic = pinoElastic({
+      index,
+      consistency: 'one',
+      node: this.config.get(Secrets.ELK_URL),
+      'es-version': 7,
+      'flush-bytes': 1000,
+    });
   }
 
   connect(logLevel?: LevelWithSilent): this {
@@ -31,6 +44,7 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
           level: 'trace',
           stream: pinoPretty(this.getPinoConfig()),
         },
+        { level: 'info', stream: this.streamToElastic },
       ]),
     );
 

@@ -7,7 +7,7 @@ import { LoggerService } from '../service';
 describe('LoggerService', () => {
   let loggerService: ILoggerAdapter;
   beforeEach(() => {
-    loggerService = new LoggerService();
+    loggerService = new LoggerService(setMock({ get: jest.fn() }));
 
     loggerService.httpLogger = setMock({
       logger: {

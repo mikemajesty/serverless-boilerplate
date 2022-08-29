@@ -2,14 +2,40 @@
 version: '3.0'
 
 services:
-  localstack:
-    image: localstack/localstack:latest
-    environment: 
-      - AWS_DEFAULT_REGION=us-east-1
-      - EDGE_PORT=4566
-      - SERVICES=sqs,sns
+  elasticsearch:
+    container_name: serverless_elasticsearch
+    image: elasticsearch:7.11.2
     ports:
-      - '4566-4597:4566-4597'
-    volumes:
-      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - '9200:9200'
+      - '9300:9300'
+    environment:
+      - node.name=elasticsearch
+      - cluster.name=es-docker-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+  kibana:
+    container_name: serverless-kibana
+    image: kibana:7.11.2
+    ports:
+      - '5601:5601'
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+  jaegertracing:
+    container_name: serverless_jaegertracing
+    image: jaegertracing/all-in-one:latest
+    env_file:
+      - .env
+    ports:
+      - '5775:5775/udp'
+      - '6831:6831/udp'
+      - '6832:6832/udp'
+      - '5778:5778'
+      - '16686:16686'
+      - '14268:14268'
+      - '9411:9411'

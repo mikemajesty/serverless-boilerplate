@@ -17,7 +17,6 @@ const serverlessConfiguration: AWS = {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
       ENV: '${env:NODE_ENV}',
-      AWS_ACCESS_KEY_ID: '${env:AWS_ACCESS_KEY_ID}',
       AWS_REGION: '${env:AWS_REGION}',
     },
   },

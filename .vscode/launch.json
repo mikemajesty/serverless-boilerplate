@@ -16,7 +16,7 @@
         "invoke",
         "local",
         "--function",
-        "hello",
+        "http-hello",
         "--path",
         "src/functions/hello/mock.json"
       ],
