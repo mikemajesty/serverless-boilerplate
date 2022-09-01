@@ -1,5 +1,5 @@
 import { ILoggerAdapter } from '@libs/logger/adapter';
-import type { APIGatewayProxyEvent, APIGatewayProxyResult, Handler, SNSEvent, SQSEvent } from 'aws-lambda';
+import type { APIGatewayProxyEvent, APIGatewayProxyResult, Handler, SNSEvent, SNSMessage, SQSEvent } from 'aws-lambda';
 import type { FromSchema } from 'json-schema-to-ts';
 
 type ValidatedAPIGatewayProxyEvent<S> = Omit<APIGatewayProxyEvent, 'body'> & {
@@ -15,11 +15,19 @@ export type HttpEventType = Omit<APIGatewayProxyEvent, 'body'> & {
   logger: ILoggerAdapter;
 };
 
-export type SNSEventType = SNSEvent & {
+export type SQSMessageType = SNSMessage & {
+  logger: ILoggerAdapter;
+};
+
+export type SNSMessageType = SNSMessage & {
   logger: ILoggerAdapter;
 };
 
 export type SQSEventType = SQSEvent & {
+  logger: ILoggerAdapter;
+};
+
+export type SNSEventType = SNSEvent & {
   logger: ILoggerAdapter;
 };
 

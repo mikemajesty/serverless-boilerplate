@@ -4,10 +4,10 @@ import { httpErrorHandlerMiddleware } from '../http-error';
 
 describe('httpErrorHandlerMiddleware', () => {
   describe('before', () => {
-    test('should customMiddlewareBefore successfully with traceId', () => {
+    test('should customMiddlewareBefore successfully with traceId', async () => {
       const middleware = httpErrorHandlerMiddleware();
 
-      middleware.before({
+      await middleware.before({
         event: { headers: { traceid: 'traceid' } },
         context: { functionName: 'functionName' },
       });
@@ -15,10 +15,10 @@ describe('httpErrorHandlerMiddleware', () => {
       expect(LoggerService.info).toHaveBeenCalled();
     });
 
-    test('should customMiddlewareBefore successfully without traceId', () => {
+    test('should customMiddlewareBefore successfully without traceId', async () => {
       const middleware = httpErrorHandlerMiddleware();
 
-      middleware.before({
+      await middleware.before({
         event: { headers: {} },
         context: { functionName: 'functionName' },
         ctx: {},
@@ -27,28 +27,28 @@ describe('httpErrorHandlerMiddleware', () => {
       expect(LoggerService.info).toHaveBeenCalled();
     });
 
-    test('should throw missing function name', () => {
+    test('should throw missing function name', async () => {
       const middleware = httpErrorHandlerMiddleware();
 
       jest.spyOn(LoggerService, 'error').mockReturnValue(null);
-      middleware.before({ event: { headers: {} } });
+      await expect(middleware.before({ event: { headers: {} } })).rejects.toThrow();
       expect(LoggerService.error).toHaveBeenCalled();
     });
   });
 
   describe('after', () => {
-    test('should after with statusCode', () => {
+    test('should after with statusCode', async () => {
       const middleware = httpErrorHandlerMiddleware();
       const res = { response: { statusCode: 201 } };
-      middleware.after(res);
+      await middleware.after(res);
       expect(res).toEqual({ response: { statusCode: 201 } });
       expect(LoggerService.info).toHaveBeenCalled();
     });
 
-    test('should after without statusCode', () => {
+    test('should after without statusCode', async () => {
       const middleware = httpErrorHandlerMiddleware();
       const res = { response: {} };
-      middleware.after(res);
+      await middleware.after(res);
       expect(res).toEqual({ response: { statusCode: 200 } });
       expect(LoggerService.info).toHaveBeenCalled();
     });

@@ -1,5 +1,4 @@
 import { setMock } from '@utils/test';
-import AWS from 'aws-sdk';
 
 import { SNSService } from '../service';
 
@@ -12,19 +11,18 @@ describe('SNSService', () => {
     });
 
     test('should publish successfully', async () => {
-      jest.spyOn(AWS, 'SNS').mockImplementation(() =>
+      jest.spyOn(service, 'getInstance').mockImplementation(() =>
         setMock({
           publish: () => ({
             promise: () => true,
           }),
         }),
       );
-
       await expect(service.publish({ Message: 'dummy', TopicArn: 'dummy' })).resolves.toEqual(true);
     });
 
     test('should throw publish error', async () => {
-      jest.spyOn(AWS, 'SNS').mockImplementation(() =>
+      jest.spyOn(service, 'getInstance').mockImplementation(() =>
         setMock({
           publish: () => ({
             promise: () => {

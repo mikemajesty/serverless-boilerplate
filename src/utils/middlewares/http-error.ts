@@ -33,6 +33,7 @@ export const httpErrorHandlerMiddleware = (): IMiddlewareAdapter => {
       });
     } catch (error) {
       LoggerService.error(error);
+      throw error;
     }
   };
 

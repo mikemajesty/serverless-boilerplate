@@ -26,7 +26,8 @@ jest.mock('aws-sdk', () => ({
   config: ({
     update: jest.fn()
   }),
-  SNS: jest.genMockFromModule('aws-sdk').SNS
+  SNS: jest.fn(() => jest.fn()),
+  Lambda: jest.fn(() => jest.fn())
 }))
 
 jest.spyOn(process, 'cwd').mockReturnValue(null)

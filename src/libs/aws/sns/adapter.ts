@@ -7,4 +7,6 @@ export interface ISNSService {
     params: SNS.Types.PublishInput,
     config?: SNS.Types.ClientConfiguration,
   ): Promise<PromiseResult<SNS.Types.PublishResponse, AWSError>>;
+
+  getInstance(config?: SNS.Types.ClientConfiguration): SNS;
 }
