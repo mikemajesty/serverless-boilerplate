@@ -12,7 +12,7 @@ export class ApiException extends Error {
   ctx?: string;
 
   getStatus() {
-    return this.statusCode || this.code;
+    return [this.statusCode, this.code].find(Boolean);
   }
 
   getResponse() {

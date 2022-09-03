@@ -11,7 +11,7 @@ export const LambdaService = {
 
   formatJSONResponse(response: ResponseType): APIGatewayProxyResult {
     return {
-      statusCode: [response.statusCode, 200].find((s) => s),
+      statusCode: [response.statusCode, 200].find(Boolean),
       body: JSON.stringify(response),
       headers: { 'Content-Type': 'application/json' },
       isBase64Encoded: false,

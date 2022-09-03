@@ -1,20 +1,5 @@
 version: "2"
 services:
-  serverless-api:
-    container_name: serverless-api
-    ports:
-      - '3000:3000'
-    depends_on:
-      - elasticsearch
-      - kibana
-      - jaegertracing
-    env_file:
-      - .env
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    volumes:
-      - .:/src:cached
   elasticsearch:
     container_name: serverless_elasticsearch
     image: elasticsearch:7.11.2
