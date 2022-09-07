@@ -2,7 +2,7 @@ import { Options, validate, ValidatorResult } from 'jsonschema';
 
 import { ApiException, HttpStatus } from './exception';
 
-export default (body, schema, options?: Options): ValidatorResult => {
+export default (body: unknown, schema: unknown, options?: Options): ValidatorResult => {
   const isValid = validate(body, schema, options);
 
   if (isValid.errors.length) {

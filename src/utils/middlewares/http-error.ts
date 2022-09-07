@@ -49,7 +49,7 @@ export const httpErrorHandlerMiddleware = (): IMiddlewareAdapter => {
   };
 
   const customMiddlewareOnError = async (request) => {
-    const message = [request.error?.response?.statusText, request.error.message].find(Boolean);
+    const message = [request.error?.response?.statusText, request.error?.message].find(Boolean);
     const status = [request.error?.response?.status, request.error?.statusCode, request.error?.status, 500].find(
       Boolean,
     );

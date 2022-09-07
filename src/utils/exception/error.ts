@@ -17,7 +17,7 @@ export class ApiException extends Error {
 
   getResponse() {
     return {
-      statusCode: this.statusCode,
+      statusCode: this.getStatus(),
       message: this.message,
     };
   }

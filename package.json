@@ -4,7 +4,7 @@
   "description": "Serverless aws-nodejs-typescript template",
   "main": "serverless.ts",
   "scripts": {
-    "debug": "SLS_DEBUG=* nodemon -e ts --exec sls offline start",
+    "debug": "SLS_DEBUG=* sls offline start",
     "commit": "cz",
     "infra:local": "docker-compose -f docker-compose-local.yml up --build",
     "serverless:install": "yarn clean && yarn install",
@@ -52,7 +52,6 @@
     "husky": "^8.0.1",
     "jest": "^27.5.1",
     "json-schema-to-ts": "^1.5.0",
-    "nodemon": "^2.0.19",
     "prettier": "^2.3.2",
     "serverless": "^3.0.0",
     "serverless-aws-documentation": "^1.1.0",
