@@ -7,7 +7,11 @@ describe('SNSService', () => {
     let service: SNSService;
 
     beforeEach(() => {
-      service = new SNSService(setMock({ info: jest.fn() }));
+      service = new SNSService(
+        setMock({ AWS: { SNS: jest.fn() } }),
+        setMock({ info: jest.fn() }),
+        setMock({ get: jest.fn() }),
+      );
     });
 
     test('should publish successfully', async () => {

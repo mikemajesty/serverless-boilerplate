@@ -1,3 +1,4 @@
+import { ConfigService, Secrets } from '@libs/config';
 import { LoggerService } from '@libs/logger';
 import { LambdaService } from '@utils/lambda';
 import { v4 as uuidv4 } from 'uuid';
@@ -10,11 +11,10 @@ import { IMiddlewareAdapter } from './adapter';
  */
 export const httpErrorHandlerMiddleware = (): IMiddlewareAdapter => {
   const customMiddlewareBefore = async (request) => {
+    const { event } = request;
+    event.logger = new LoggerService(new ConfigService().get(Secrets.ELK_URL));
+
     try {
-      const { event } = request;
-
-      event.logger = LoggerService;
-
       if (event.headers?.traceid) {
         event.headers.traceId = event.headers?.traceid;
       }
@@ -26,13 +26,13 @@ export const httpErrorHandlerMiddleware = (): IMiddlewareAdapter => {
       request.id = event.headers.traceId;
       request.event.traceId = request.id;
 
-      LoggerService.httpLogger(request, { on: () => true } as never);
+      event.logger.httpLogger(request, { on: () => true } as never);
 
-      LoggerService.info({
+      event.logger.info({
         message: `Lambda: ${request.context.functionName} in processing`,
       });
     } catch (error) {
-      LoggerService.error(error);
+      event.logger.error(error);
       throw error;
     }
   };
@@ -42,7 +42,7 @@ export const httpErrorHandlerMiddleware = (): IMiddlewareAdapter => {
     const statusCode = request.response?.statusCode || 200;
     response.statusCode = statusCode;
     request.response = response;
-    LoggerService.info({
+    request.event.logger.info({
       message: 'Success',
       obj: { statusCode },
     });
@@ -59,7 +59,7 @@ export const httpErrorHandlerMiddleware = (): IMiddlewareAdapter => {
     request.error['context'] = request.context;
     request.error['traceId'] = request.id;
 
-    LoggerService.error(request.error);
+    request.event.logger.error(request.error);
 
     try {
       const statusCode = [request.error.statusCode, request.statusCode, 500].find(Boolean);
@@ -74,7 +74,7 @@ export const httpErrorHandlerMiddleware = (): IMiddlewareAdapter => {
         data: undefined,
       });
     } catch (error) {
-      LoggerService.error(error);
+      request.event.logger.error(error);
     }
   };
 

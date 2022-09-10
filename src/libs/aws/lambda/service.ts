@@ -1,14 +1,13 @@
-import { AWSError, ConfigurationOptions, Lambda } from 'aws-sdk';
+import { AWSError, Lambda } from 'aws-sdk';
 
-import { AWSService } from '../service';
+import { IAWSService } from '../adapter';
 import { PromiseResult } from '../sns/types';
 import { ILambdaService } from './adapter';
 
-export class LambdaService extends AWSService implements ILambdaService {
+export class LambdaService implements ILambdaService {
   private lambda: Lambda;
 
-  constructor(config?: ConfigurationOptions) {
-    super(config);
+  constructor(private awsService: IAWSService) {
     this.lambda = this.getInstance();
   }
 
@@ -23,6 +22,7 @@ export class LambdaService extends AWSService implements ILambdaService {
     if (this.lambda) {
       return this.lambda;
     }
-    return new Lambda(config);
+
+    return new this.awsService.AWS.Lambda(config);
   }
 }

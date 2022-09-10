@@ -1,4 +1,3 @@
-import { IConfigAdapter, Secrets } from '@libs/config';
 import { ApiException } from '@utils/exception';
 import { DateTime } from 'luxon';
 import { ServerResponse } from 'node:http';
@@ -19,37 +18,19 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
   private app: string;
   private streamToElastic: Transform;
 
-  constructor(private config: IConfigAdapter) {
+  constructor(elkURL: string, level?: LevelWithSilent) {
     this.setApplication(name);
     const index = `serverless-logs-${this.getDateFormat(new Date(), 'yyyy-MM')}`;
 
     this.streamToElastic = pinoElastic({
       index,
       consistency: 'one',
-      node: this.config.get(Secrets.ELK_URL),
+      node: elkURL,
       'es-version': 7,
       'flush-bytes': 1000,
     });
-  }
 
-  connect(logLevel?: LevelWithSilent): this {
-    const level = [logLevel, 'trace'].find(Boolean);
-    const pinoLogger = pino(
-      {
-        useLevelLabels: true,
-        level: level,
-      },
-      multistream([
-        {
-          level: 'trace',
-          stream: pinoPretty(this.getPinoConfig()),
-        },
-        { level: 'info', stream: this.streamToElastic },
-      ]),
-    );
-
-    this.httpLogger = pinoHttp(this.getPinoHttpConfig(pinoLogger));
-    return this;
+    this.connect(level);
   }
 
   setApplication(app: string): void {
@@ -221,5 +202,24 @@ export class LoggerService implements ILoggerAdapter<HttpLogger> {
   private getTraceId(error): string {
     if (typeof error === 'string') return uuidv4();
     return [error.traceId, this.httpLogger.logger.bindings()?.tranceId].find(Boolean);
+  }
+
+  private connect(logLevel?: LevelWithSilent) {
+    const level = [logLevel, 'trace'].find(Boolean);
+    const pinoLogger = pino(
+      {
+        useLevelLabels: true,
+        level: level,
+      },
+      multistream([
+        {
+          level: 'trace',
+          stream: pinoPretty(this.getPinoConfig()),
+        },
+        { level: 'info', stream: this.streamToElastic },
+      ]),
+    );
+
+    this.httpLogger = pinoHttp(this.getPinoHttpConfig(pinoLogger));
   }
 }

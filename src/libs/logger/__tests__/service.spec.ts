@@ -23,18 +23,6 @@ describe('LoggerService', () => {
     });
   });
 
-  describe('connect', () => {
-    test('should connect successfully', () => {
-      const connection = loggerService.connect('trace');
-      expect(connection).toHaveProperty('app');
-    });
-
-    test('should connect successfully with default value', () => {
-      const connection = loggerService.connect();
-      expect(connection).toHaveProperty('app');
-    });
-  });
-
   describe('info', () => {
     test('should info successfully with all parameters', () => {
       loggerService.info({

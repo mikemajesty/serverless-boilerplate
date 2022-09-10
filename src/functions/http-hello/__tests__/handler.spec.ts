@@ -1,4 +1,3 @@
-import { LoggerService } from '@libs/logger';
 import { setMock } from '@utils/test';
 
 import { helloHandler } from '../handler';
@@ -20,13 +19,11 @@ describe('main', () => {
     });
   });
 
-  test('should return traceId error', async () => {
+  test('should return missing traceId error', async () => {
     const event = {
       headers: {},
+      logger: {},
     };
-
-    // exclude message console
-    jest.spyOn(LoggerService, 'error').mockReturnValue(null);
 
     await expect(helloHandler(event, setMock({}))).resolves.toEqual({
       body: '{"error":{"message":"Internal Server Error.","traceId":"1"},"statusCode":500}',

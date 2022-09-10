@@ -4,8 +4,9 @@ import { LambdaService } from '../service';
 
 describe('LambdaService', () => {
   let service: LambdaService;
+
   beforeEach(() => {
-    service = new LambdaService();
+    service = new LambdaService(setMock({ AWS: { Lambda: jest.fn() } }));
   });
 
   describe('invoke', () => {

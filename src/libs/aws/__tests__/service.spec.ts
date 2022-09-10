@@ -1,12 +1,11 @@
+import { IAWSService } from '../adapter';
 import { AWSService } from '../service';
 
-class AWSServiceDummy extends AWSService {}
-
 describe('AWSService', () => {
-  let service: AWSServiceDummy;
+  let service: IAWSService;
 
   beforeEach(() => {
-    service = new AWSServiceDummy();
+    service = new AWSService();
   });
 
   test('should be defined', () => {

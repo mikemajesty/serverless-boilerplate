@@ -1,5 +1,3 @@
-import { LoggerService } from '@libs/logger';
-
 import { httpErrorHandlerMiddleware } from '../http-error';
 
 describe('httpErrorHandlerMiddleware', () => {
@@ -7,59 +5,59 @@ describe('httpErrorHandlerMiddleware', () => {
     test('should customMiddlewareBefore successfully with traceId', async () => {
       const middleware = httpErrorHandlerMiddleware();
 
-      await middleware.before({
-        event: { headers: { traceid: 'traceid' } },
-        context: { functionName: 'functionName' },
-      });
-
-      expect(LoggerService.info).toHaveBeenCalled();
+      await expect(
+        middleware.before({
+          event: { headers: { traceid: 'traceid' } },
+          context: { functionName: 'functionName' },
+        }),
+      ).resolves.toBeUndefined();
     });
 
     test('should customMiddlewareBefore successfully without traceId', async () => {
       const middleware = httpErrorHandlerMiddleware();
 
-      await middleware.before({
-        event: { headers: {} },
-        context: { functionName: 'functionName' },
-        ctx: {},
-      });
-
-      expect(LoggerService.info).toHaveBeenCalled();
+      await expect(
+        middleware.before({
+          event: { headers: {} },
+          context: { functionName: 'functionName' },
+          ctx: {},
+        }),
+      ).resolves.toBeUndefined();
     });
 
     test('should throw missing function name', async () => {
       const middleware = httpErrorHandlerMiddleware();
 
-      jest.spyOn(LoggerService, 'error').mockReturnValue(null);
       await expect(middleware.before({ event: { headers: {} } })).rejects.toThrow();
-      expect(LoggerService.error).toHaveBeenCalled();
     });
   });
 
   describe('after', () => {
+    const EVENT_MOCK = { logger: { info: jest.fn() } };
+
     test('should after with statusCode', async () => {
       const middleware = httpErrorHandlerMiddleware();
-      const res = { response: { statusCode: 201 } };
+      const res = { response: { statusCode: 201 }, event: EVENT_MOCK };
       await middleware.after(res);
-      expect(res).toEqual({ response: { statusCode: 201 } });
-      expect(LoggerService.info).toHaveBeenCalled();
+      expect(res.response).toEqual({ statusCode: 201 });
     });
 
     test('should after without statusCode', async () => {
       const middleware = httpErrorHandlerMiddleware();
-      const res = { response: {} };
+      const res = { response: {}, event: EVENT_MOCK };
       await middleware.after(res);
-      expect(res).toEqual({ response: { statusCode: 200 } });
-      expect(LoggerService.info).toHaveBeenCalled();
+      expect(res.response).toEqual({ statusCode: 200 });
     });
   });
 
   describe('customMiddlewareOnError', () => {
+    const EVENT_MOCK = { logger: { error: jest.fn() } };
+
     test('should customMiddlewareOnError with statusCode', async () => {
       const middleware = httpErrorHandlerMiddleware();
       const error = { message: 'message', statusCode: 500 };
 
-      const res = await middleware.onError({ error, context: 'context', traceId: 'traceId' });
+      const res = await middleware.onError({ error, context: 'context', traceId: 'traceId', event: EVENT_MOCK });
 
       expect(res).toEqual({
         body: '{"error":{"message":"Internal Server Error."},"statusCode":500}',
@@ -73,7 +71,7 @@ describe('httpErrorHandlerMiddleware', () => {
       const middleware = httpErrorHandlerMiddleware();
       const error = { message: 'message' };
 
-      const res = await middleware.onError({ error, context: 'context', traceId: 'traceId' });
+      const res = await middleware.onError({ error, context: 'context', traceId: 'traceId', event: EVENT_MOCK });
       expect(res).toEqual({
         statusCode: 500,
         body: '{"error":{"message":"Internal Server Error."},"statusCode":500}',

@@ -11,7 +11,7 @@
     "lint": "./node_modules/.bin/eslint \"./src/**/*.{ts, js, json}\" --config \"./.eslintrc.js\" --fix",
     "prepare": "husky install && chmod ug+x .husky/pre-commit && .husky/commit-msg",
     "clean": "rm -rf \"node_modules\" && rm -rf \".esbuild\" && rm -rf \".serverless\" && rm -rf \"yarn.lock\"",
-    "test": "jest --detectOpenHandles --maxWorkers=50%",
+    "test": "jest --detectOpenHandles --runInBand",
     "test:coverage": "jest --detectOpenHandles --coverage"
   },
   "engines": {
