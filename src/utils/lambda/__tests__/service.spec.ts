@@ -1,6 +1,6 @@
 import { setMock } from '@utils/test';
 
-import { LambdaService } from '../service';
+import { LambdaService } from '../lambda';
 
 describe('LambdaService', () => {
   describe('formatJSONResponse', () => {

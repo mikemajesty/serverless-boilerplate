@@ -1,4 +1,4 @@
-import { ApiException } from '../service';
+import { ApiException } from '../exception';
 import { HttpStatus } from '../status';
 
 describe('ApiException', () => {
