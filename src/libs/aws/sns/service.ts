@@ -8,13 +8,8 @@ import { PromiseResult } from './types';
 export class SNSService implements ISNSService {
   private SNS: SNS;
 
-  constructor(
-    private awsService: IAWSService,
-    private loggerService: ILoggerAdapter,
-    private awsENDPoint: string,
-    options?: SNS.Types.ClientConfiguration,
-  ) {
-    this.SNS = this.getInstance(options);
+  constructor(private awsService: IAWSService, private loggerService: ILoggerAdapter, private awsENDPoint: string) {
+    this.SNS = this.getInstance();
   }
 
   async publish(params: SNS.Types.PublishInput): Promise<PromiseResult<SNS.Types.PublishResponse, AWSError>> {
@@ -23,10 +18,10 @@ export class SNSService implements ISNSService {
     return response;
   }
 
-  getInstance(config?: SNS.Types.ClientConfiguration): SNS {
+  getInstance(): SNS {
     if (this.SNS) {
       return this.SNS;
     }
-    return new this.awsService.AWS.SNS(config || { endpoint: this.awsENDPoint });
+    return new this.awsService.AWS.SNS({ endpoint: this.awsENDPoint });
   }
 }

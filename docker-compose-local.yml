@@ -1,5 +1,16 @@
 version: "2"
 services:
+  localstack:
+    image: localstack/localstack
+    volumes: 
+     - .:/docker-entrypoint-initdb.d/aws.sh
+    entrypoint: 
+     - ./aws.sh
+    ports:
+      - "4566:4566"
+      - "8080:8080"
+    environment:
+      - SERVICES=sqs, sns
   elasticsearch:
     container_name: serverless_elasticsearch
     image: elasticsearch:7.11.2
